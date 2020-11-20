@@ -1,0 +1,12 @@
+{
+  "name": "imbook",
+  "displayName": "imbook",
+  "expo": {
+    "name": "imbook",
+    "slug": "imbook",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
