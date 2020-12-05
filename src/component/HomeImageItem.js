@@ -1,28 +1,35 @@
 import React, { useState } from 'react';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { View, Image, StyleSheet, Text } from 'react-native';
+import { useLinkProps } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-
-function HomeImageItem () {
+function HomeImageItem (props) {
+    const image=props.image
     return(
-        <View style={styles.container}>
-            <Image style={styles.item} source={require('../../assets/images/BookSample01.jpg')}/>
-            <Text style={styles.title}>냐냐</Text>
-        </View>
+
+            <View style={styles.container}>
+                <Image style={styles.item} source={require('../../assets/images/BookSample01.jpg')}/>
+                <Text style={styles.title}>{props.title}</Text>
+            </View>
+     
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        padding : 10,
+        padding: 15,
     },
     item : {
-        width: 100,
-        height: 200,
-        resizeMode: 'center',
+        marginBottom: 10,
+        width: 80,
+        height: 110,
+        resizeMode: 'stretch',
     },
     title : {
         textAlign: 'center',
+        fontSize: 13
     }
 })
 
