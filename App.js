@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
-import * as React from 'react';
+import React, {useState
+} from 'react';
 import * as SQLite from 'expo-sqlite';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,6 +20,7 @@ const db = SQLite.openDatabase('db.db');
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [count, setCount] = useState(0);
   return (
     <NavigationContainer>
       <Tab.Navigator

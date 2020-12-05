@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, Text, View, StyleSheet, TouchableHighlight, Image } from 'react-native';
+import { FlatList, Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import HomeImageItem from '../component/HomeImageItem.js';
 import * as SQLite from 'expo-sqlite';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -62,21 +62,25 @@ function HomeScreen({route, navigation}) {
 
 function HomeMain({navigation}) {
   return (
-    <View>  
+    <View style={{flex:1, backgroundColor:'#fafafa'}}>  
+    <View/>
       <FlatList
         data={DATA}
         contentContainerStyle={styles.flatlist}
+        ListHeaderComponent={()=>(<View style={{width:300,height:25}}>
+        </View>)}
         renderItem={({item, index, separators}) =>(
-          <TouchableHighlight
+          <TouchableOpacity
           underlayColor="#ffffff"
           onPress={()=>navigation.navigate('HomeDetail',{
             title: item.title,
           })}
+
           >
           
             <HomeImageItem title={item.title} image={item.image}/>
           
-          </TouchableHighlight>
+          </TouchableOpacity>
         )}
       />
   </View>

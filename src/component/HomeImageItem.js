@@ -9,7 +9,9 @@ function HomeImageItem (props) {
     return(
 
             <View style={styles.container}>
-                <Image style={styles.item} source={require('../../assets/images/BookSample01.jpg')}/>
+                <View style={{shadowColor: "#000000", shadowOpacity: 0.5, shadowOffset: { width: 2, height: 2 }}}>
+                    <Image style={styles.item} source={require('../../assets/images/BookSample01.jpg')}/>
+                </View>
                 <Text style={styles.title}>{props.title}</Text>
             </View>
      
