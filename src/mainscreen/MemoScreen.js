@@ -1,54 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, TextInput, Switch } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {database} from '../database';
+import * as SQLite from 'expo-sqlite';
 
-const DATA= [
-  {
-    booktitle: 'booktitle1',
-    title: 'title1',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle2',
-    title: 'title2',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle3',
-    title: 'title3',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle4',
-    title: 'title4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle4',
-    title: 'title4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle4',
-    title: 'title4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle4',
-    title: 'title4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-  {
-    booktitle: 'booktitle4',
-    title: 'title4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.'
-  },
-]
-
+const db = SQLite.openDatabase('imbook.db');
 
 const MemoStack = createStackNavigator();
 
+
 function MemoScreen() {
+
   return (
     <MemoStack.Navigator initialRouteName="MemoMain">
       <MemoStack.Screen
@@ -56,17 +19,78 @@ function MemoScreen() {
         component={MemoMain}
         options={{title:'독후감 목록'}}
       />
+      <MemoStack.Screen
+        name="AddMemo"
+        component={AddMemo}
+        options={{title:'독후감 쓰기'}}
+      />
+
+
+
     </MemoStack.Navigator>
   );
 }
 
+
 function MemoMain({navigation}) {
+
+  const[DATA, setDATA] = useState([]);
+  async function loadData() {
+    let promise = new Promise(function(resolve, reject){
+
+      db.transaction(tx=>{
+        tx.executeSql('CREATE TABLE IF NOT EXISTS bookreport ("report_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "book_id" INTEGER NOT NULL, "report_title" TEXT NOT NULL , "report" TEXT NOT NULL, FOREIGN KEY("book_id") REFERENCES "bookinfo"("id") ON DELETE CASCADE);',
+          [],
+          (t, success)=>{},
+          (_t, error) => {console.log('create bookreport tabel fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx => {
+          tx.executeSql('SELECT * FROM bookreport INNER JOIN bookinfo ON (bookreport.book_id = bookinfo.id)', 
+              [], 
+              (t, results) => {                   
+              const rows = results.rows;
+              let BookReport = [];
+        
+              for (let i = 0; i < rows.length; i++) {
+                  BookReport.push({
+                  ...rows.item(i),
+                  });
+              }
+              BookReport.reverse();
+              setDATA(BookReport)
+              resolve();
+            },
+            (_t, error)=>{console.log('select book report fail'); console.log(error)},
+          );
+          })
+
+
+      
+  })
+  await promise;
+  
+}
+
+  useEffect(()=> {
+    loadData()
+  });
+
+
   return (
-    <View>
+    <View style={{flex:1}}>
+
+        <TouchableOpacity style={{position: 'absolute', right: 20, bottom:20, zIndex:1000}} onPress={()=>{navigation.navigate('AddMemo')}}>
+          <Ionicons name={'ios-add-circle'}  size={60} color={'tomato'} />
+        </TouchableOpacity>
+
+      
       <FlatList
         data={DATA}
-        renderItem={({item, index})=>(<MemoItem booktitle={item.booktitle} title={item.title} content={item.content}/>)}
+        renderItem={({item, index})=>(<MemoItem booktitle={item.title} title={item.report_title} content={item.report}/>)}
       />
+      
     </View>
   );
 }
@@ -80,6 +104,49 @@ function MemoItem (props) {
           <View style={{borderBottomColor:'#EAEAEA', borderBottomWidth: 1}}/>
       </View>
   );
+}
+
+function AddMemo({route, navigation}) {
+  const [bookId, setBookId] = useState(0);
+  const [reportTitle, setReportTitle] = useState('');
+  const [report, setReport] = useState('');
+
+  return(
+    <View style={{flex:1, padding:15, backgroundColor: '#ffffff'}}>
+      <Text style={{marginBottom:20, marginTop: 10, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>새 독후감</Text>
+
+      <TextInput 
+        style={{backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+        placeholder={'책 id'}
+
+        onChangeText={text=>setBookId(parseInt(text))}
+      />
+
+      <TextInput 
+        style={{marginTop:20,backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+        placeholder={'독후감 제목'}
+
+        onChangeText={text=>setReportTitle(text)}
+        />
+
+      <Text style={{marginTop: 30, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>내용</Text>
+        <TextInput 
+          style={{marginTop: 20, backgroundColor:'#ffffff', height: 300, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+
+          onChangeText={text=>setReport(text)} 
+        />
+        
+
+
+
+        <TouchableOpacity 
+          style={{marginTop: 13,backgroundColor:'#Ff7171', paddingTop:20, height: 60, borderRadius: 8,  shadowColor: "#000000", shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }}}
+          onPress={()=>{database.setBookReport(bookId, reportTitle, report)}}
+        >
+          <Text style={{textAlign:'center', color:'#ffffff', fontWeight:'bold'}}>입력완료</Text>
+        </TouchableOpacity>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({

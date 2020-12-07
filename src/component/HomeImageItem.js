@@ -10,7 +10,7 @@ function HomeImageItem (props) {
 
             <View style={styles.container}>
                 <View style={{shadowColor: "#000000", shadowOpacity: 0.5, shadowOffset: { width: 2, height: 2 }}}>
-                    <Image style={styles.item} source={require('../../assets/images/BookSample01.jpg')}/>
+                    <Image style={styles.item} source={require('../../assets/images/BookSample02.png')}/>
                 </View>
                 <Text style={styles.title}>{props.title}</Text>
             </View>
@@ -25,8 +25,8 @@ const styles = StyleSheet.create({
     },
     item : {
         marginBottom: 10,
-        width: 80,
-        height: 110,
+        width: 90,
+        height: 90,
         resizeMode: 'stretch',
     },
     title : {

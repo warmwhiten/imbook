@@ -5,7 +5,7 @@ import * as SQLite from 'expo-sqlite';
 import { createStackNavigator } from '@react-navigation/stack';
 import {database} from '../database';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
+
 
 
 const db = SQLite.openDatabase('imbook.db');
@@ -45,6 +45,7 @@ function HomeMain({navigation}) {
   async function loadData() {
     let promise = new Promise(function(resolve, reject){
 
+
       db.transaction(tx=>{
           tx.executeSql('CREATE TABLE IF NOT EXISTS bookinfo (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT NOT NULL, author TEXT NOT NULL, publisher TEXT NOT NULL);',
           [],
@@ -52,7 +53,31 @@ function HomeMain({navigation}) {
           (_t, error) => {console.log('create bookinfo tabel fail'); console.log(error)}
           )
       })
+/*
+      db.transaction(tx=>{
+        tx.executeSql('Drop table bookinfo',
+        [],
+        (t, success)=>{},
+        (_t, error) => {console.log('create bookinfo tabel fail'); console.log(error)}
+        )
+    })
   
+    db.transaction(tx=>{
+      tx.executeSql('Drop table bookstate',
+      [],
+      (t, success)=>{},
+      (_t, error) => {console.log('create bookinfo tabel fail'); console.log(error)}
+      )
+  })
+  */
+      db.transaction(tx=>{
+        tx.executeSql('CREATE TABLE IF NOT EXISTS bookstate ("id" INTEGER NOT NULL UNIQUE, "have" INTEGER NOT NULL, "reading" INTEGER NOT NULL, "havingform" INTEGER NOT NULL, FOREIGN KEY("id") REFERENCES "bookinfo"("id") ON DELETE CASCADE, PRIMARY KEY("id"));',
+          [],
+          (t, success)=>{},
+          (_t, error) => {console.log('create bookstate tabel fail'); console.log(error)}
+          );
+      })
+
       db.transaction(tx => {
           tx.executeSql('SELECT * FROM bookinfo', 
               [], 
@@ -65,13 +90,15 @@ function HomeMain({navigation}) {
                   ...rows.item(i),
                   });
               }
-              
+              BookInfo.reverse();
               setDATA(BookInfo)
               resolve();
             },
             (_t, error)=>{console.log('select book info fail'); console.log(error)},
           );
           })
+
+
       
   })
   await promise;
@@ -81,6 +108,7 @@ function HomeMain({navigation}) {
   useEffect(()=> {
     loadData()
   });
+
   return (
     <View style={{flex:1, backgroundColor:'#fafafa'}}>  
     <View/>
@@ -99,6 +127,10 @@ function HomeMain({navigation}) {
           underlayColor="#ffffff"
           onPress={()=>navigation.navigate('HomeDetail',{
             title: item.title,
+            author: item.author,
+            publisher: item.publisher,
+            id: item.id,
+
           })}
 
           >
@@ -115,7 +147,44 @@ function HomeMain({navigation}) {
 }
 
 function HomeDetail({route, navigation}) {
-  const {title} = route.params;
+  const {title, author, publisher,id} = route.params;
+  const[DATA, setDATA] = useState([]);
+  async function loadData() {
+    let promise = new Promise(function(resolve, reject){
+
+      db.transaction(tx => {
+          tx.executeSql(`SELECT * FROM bookreport INNER JOIN bookinfo ON (bookreport.book_id = bookinfo.id) WHERE id=${id}`, 
+              [], 
+              (t, results) => {                    
+              const rows = results.rows;
+              let BookInfo = [];
+        
+              for (let i = 0; i < rows.length; i++) {
+                  BookInfo.push({
+                  ...rows.item(i),
+                  });
+              }
+              
+              console.log('book info and report',BookInfo);
+              setDATA(BookInfo)
+              resolve();
+            },
+            (_t, error)=>{console.log('select book info fail'); console.log(error)},
+          );
+          })
+
+
+      
+  },)
+  await promise;
+  
+}
+
+  useEffect(()=> {
+    loadData()
+  },[DATA]);
+
+
   const text = '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.';
   
   
@@ -124,16 +193,17 @@ function HomeDetail({route, navigation}) {
       <View style={{flexDirection: 'row', paddingTop: 20, paddingBottom: 25}}>
         <View style={{flex:1, paddingLeft:20}}>
           <Image 
-          style={{width:85, height: 120}} 
-          source={require('../../assets/images/BookSample01.jpg')}
+          style={{width:100, height: 100}} 
+          source={require('../../assets/images/BookSample02.png')}
           />
         </View>
 
         <View>
           <Text style={{paddingRight: 20, paddingBottom:55, fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
 
-          <Text style={{paddingRight: 20, paddingBottom:5, fontSize: 15, textAlign: 'right', textAlignVertical: 'bottom', color:'#5C5C5C'}}>작가 : 정세랑 </Text>
-          <Text style={{paddingRight: 20, fontSize: 15, textAlign: 'right', textAlignVertical: 'bottom', color:'#5C5C5C'}}>출판사 :창비 </Text>
+          <Text style={{paddingRight: 20, paddingBottom:5, fontSize: 15, textAlign: 'right', textAlignVertical: 'bottom', color:'#5C5C5C'}}>id: {id} </Text>
+          <Text style={{paddingRight: 20, paddingBottom:5, fontSize: 15, textAlign: 'right', textAlignVertical: 'bottom', color:'#5C5C5C'}}>작가: {author} </Text>
+          <Text style={{paddingRight: 20, fontSize: 15, textAlign: 'right', textAlignVertical: 'bottom', color:'#5C5C5C'}}>출판사 : {publisher} </Text>
         </View>
       </View>
       
@@ -143,11 +213,11 @@ function HomeDetail({route, navigation}) {
         <View style={{borderBottomColor:'#EAEAEA', borderBottomWidth: 1}}/>
 
         <FlatList
-          data={DATA2}
+          data={DATA}
           renderItem={({item, index, separators})=>(
             <View>
-              <Text style={{paddingTop: 10, paddingBottom: 5, fontSize: 17, fontWeight: '500'}}>{item.reportTitle}</Text>
-              <Text style={{paddingBottom: 10}}>{item.content}</Text>
+              <Text style={{paddingTop: 10, paddingBottom: 5, fontSize: 17, fontWeight: '500'}}>{item.report_title}</Text>
+              <Text style={{paddingBottom: 10}}>{item.report}</Text>
               <View style={{borderBottomColor:'#EAEAEA', borderBottomWidth: 1}}/>
             </View>
           )}
@@ -249,7 +319,7 @@ function AddBook() {
 
 const styles = StyleSheet.create({
   flatlist: {
-    marginLeft:22
+    marginLeft:8
 },
   headerContainer: {
     height:'20%',
@@ -264,25 +334,5 @@ const styles = StyleSheet.create({
 
 })
 
-const DATA2 = [
-  {
-    reportTitle: '제목1',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.',
-  },
-  {
-    reportTitle: '제목2',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.',
-  },
-  {
-    reportTitle: '제목3',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.',
-  },
-  {
-    reportTitle: '제목4',
-    content: '그들의 우리의 같이, 웅대한 이것이다. 너의 속에 피에 현저하게 커다란 커다란 충분히 위하여 아니한 힘있다. 행복스럽고 피어나는 원대하고, 것은 쓸쓸하랴? 얼음에 품었기 청춘은 가슴이 두기 같이, 지혜는 싶이 쓸쓸하랴? 꽃이 일월과 위하여 아름다우냐? 청춘의 보는 장식하는 인생을 청춘 아니다. 가진 뼈 그와 이상 예가 칼이다. 길지 미묘한 대한 눈에 뜨고, 끝까지 품었기 심장의 황금시대다. 천지는 옷을 되는 이상 황금시대를 날카로우나 사막이다. 곳으로 얼마나 희망의 밥을 고행을 풍부하게 뿐이다.',
-  }
-
-
-]
 
 export default HomeScreen;

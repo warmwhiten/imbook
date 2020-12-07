@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {database} from '../database';
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabase('imbook.db');
 
 const ListStack = createStackNavigator();
 
@@ -25,7 +29,65 @@ function ListScreen({route, navigation}) {
 }
 
 function ListMain({navigation}) {
-  const [count, setCount] = useState(0);
+  const[totalCount, setTotalCount] = useState(0);
+  const[readingCount, setReadingCount] = useState(0);
+  const[havingCount, setHavingCount] = useState(0);
+  const[havingFormCount, setHavingFormCount] = useState(0);
+
+  async function loadData() {
+    let promise = new Promise(function(resolve, reject){
+
+      db.transaction(tx=>{
+        let count;
+        tx.executeSql('select count(*) from bookinfo',
+          [],
+          (t, result)=>{console.log(count=parseInt(result.rows.item(0)["count(*)"]));setTotalCount(count);console.log(totalCount)},
+          (_t, error) => {console.log('count fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx=>{
+        tx.executeSql('select * from bookstate',
+          [],
+          (t, result)=>{console.log('bookstate',result.rows)},
+          (_t, error) => {console.log('count fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx=>{
+        tx.executeSql('select reading, count(*) from bookstate group by reading',
+          [],
+          (t, result)=>{setReadingCount(result.rows._array[0]["count(*)"])},
+          (_t, error) => {console.log('count fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx=>{
+        tx.executeSql('select have, count(*) from bookstate group by have',
+          [],
+          (t, result)=>{setHavingCount(result.rows._array[0]["count(*)"])},
+          (_t, error) => {console.log('count fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx=>{
+        tx.executeSql('select havingform, count(*) from bookstate group by havingform',
+          [],
+          (t, result)=>{setHavingFormCount(result.rows._array[0]["count(*)"])},
+          (_t, error) => {console.log('count fail'); console.log(error)}
+          );
+      })
+
+
+      
+  })
+  await promise;
+  
+}
+
+  useEffect(()=> {
+    loadData()
+  });
 
   return (
     <View>
@@ -36,7 +98,10 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '모든 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>모든 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>모든 책</Text>
+
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{totalCount}</Text>
+
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
 
@@ -48,7 +113,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '안 읽은 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>안 읽은 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>안 읽은 책</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{readingCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
         <TouchableOpacity
@@ -57,7 +123,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '읽은 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>읽은 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>읽은 책</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{totalCount-readingCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
 
@@ -69,7 +136,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '나에게 있는 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>나에게 있는 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>나에게 있는 책</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{totalCount-havingCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
         <TouchableOpacity
@@ -78,7 +146,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '읽은 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>나에게 없는 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>나에게 없는 책</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{havingCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
 
@@ -89,7 +158,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: '종이 책',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>종이 책</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>종이 책</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{havingFormCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
         <TouchableOpacity
@@ -98,7 +168,8 @@ function ListMain({navigation}) {
           onPress={()=>navigation.navigate('ListDetail',{
             menuTitle: 'e-book',
             })}>
-          <Text style={{fontSize:16, paddingLeft: 15, flex:1, textAlign:'left'}}>e-book</Text>
+          <Text style={{fontSize:16, paddingLeft: 15, flex:10, textAlign:'left'}}>e-book</Text>
+          <Text style={{ fontSize:16, flex:1, zIndex:2, textAlign:'left', borderRadius:30, color:'tomato', fontWeight:'700'}}>{totalCount-havingFormCount}</Text>
           <Ionicons style={{paddingRight:15}} name={'ios-arrow-forward'} size={20} color={'#A6A6A6'}></Ionicons>
         </TouchableOpacity>
     </View>
