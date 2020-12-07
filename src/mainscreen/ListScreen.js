@@ -7,7 +7,6 @@ const ListStack = createStackNavigator();
 
 function ListScreen({route, navigation}) {
   const [count, setCount] = useState(0);
-  const {database, id} = route.params;
 
   return (
     <ListStack.Navigator initialRouteName="ListMain">

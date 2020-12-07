@@ -1,59 +1,39 @@
-import React, { useState } from 'react';
-import { FlatList, Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList,ScrollView, Text, View, StyleSheet, TouchableOpacity, Image, TextInput, Button, Switch} from 'react-native';
 import HomeImageItem from '../component/HomeImageItem.js';
 import * as SQLite from 'expo-sqlite';
 import { createStackNavigator } from '@react-navigation/stack';
+import {database} from '../database';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
 
-const DATA = [
-  {
-    id: '1',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이1'
-  },
-  {
-    id: '2',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이2'
-  },
-  {
-    id: '3',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이3'
-  },
-  {
-    id: '4',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이4'
-  },
-  {
-    id: '5',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이5'
-  },
-  {
-    id: '6',
-    image: '../../assets/images/BookSample01.jpg',
-    title: '이만큼 가까이6'
-  },
-]
+
+const db = SQLite.openDatabase('imbook.db');
+
+let DATA=[];
 
 const HomeStack = createStackNavigator();
 
+
 function HomeScreen({route, navigation}) {
-  const [count, setCount] = useState(0);
-  const {database, id} = route.params;
+  const [isDBLoadingComplete, setDBLoadingComplete] = useState(0);
 
   return (
     <HomeStack.Navigator initialRouteName="HomeMain">
       <HomeStack.Screen
         name="HomeMain"
         component={HomeMain}
-        options={{title:'내가 읽은 책'}}
+        options={{title:'내 책 보기'}}
       />
       <HomeStack.Screen
         name="HomeDetail"
         component={HomeDetail}
         options={{title: '상세보기'}}
+      />
+      <HomeStack.Screen
+        name="AddBook"
+        component={AddBook}
+        options={{title: '새 책 추가하기'}}
       />
     </HomeStack.Navigator>
   );
@@ -61,12 +41,57 @@ function HomeScreen({route, navigation}) {
 
 
 function HomeMain({navigation}) {
+  const[DATA, setDATA] = useState([]);
+  async function loadData() {
+    let promise = new Promise(function(resolve, reject){
+
+      db.transaction(tx=>{
+          tx.executeSql('CREATE TABLE IF NOT EXISTS bookinfo (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT NOT NULL, author TEXT NOT NULL, publisher TEXT NOT NULL);',
+          [],
+          (t, success)=>{},
+          (_t, error) => {console.log('create bookinfo tabel fail'); console.log(error)}
+          )
+      })
+  
+      db.transaction(tx => {
+          tx.executeSql('SELECT * FROM bookinfo', 
+              [], 
+              (t, results) => {                    
+              const rows = results.rows;
+              let BookInfo = [];
+        
+              for (let i = 0; i < rows.length; i++) {
+                  BookInfo.push({
+                  ...rows.item(i),
+                  });
+              }
+              
+              setDATA(BookInfo)
+              resolve();
+            },
+            (_t, error)=>{console.log('select book info fail'); console.log(error)},
+          );
+          })
+      
+  })
+  await promise;
+  
+}
+
+  useEffect(()=> {
+    loadData()
+  });
   return (
     <View style={{flex:1, backgroundColor:'#fafafa'}}>  
     <View/>
+      <TouchableOpacity style={{position: 'absolute', right: 20, bottom:20, zIndex:100}} onPress={()=>{navigation.navigate('AddBook')}}>
+        <Ionicons name={'ios-add-circle'} size={60} color={'tomato'} />
+      </TouchableOpacity>
       <FlatList
         data={DATA}
         contentContainerStyle={styles.flatlist}
+        horizontal={false}
+        numColumns={3}
         ListHeaderComponent={()=>(<View style={{width:300,height:25}}>
         </View>)}
         renderItem={({item, index, separators}) =>(
@@ -83,7 +108,9 @@ function HomeMain({navigation}) {
           </TouchableOpacity>
         )}
       />
-  </View>
+    </View>
+
+    
   );
 }
 
@@ -148,13 +175,81 @@ function HomeDetail({route, navigation}) {
   )
 }
 
+function AddBook() {
 
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [publisher, setPublisher] = useState('');
+  const [isHave, setIsHave] = useState(false);
+  const [isEbook, setIsEbook] = useState(false);
+  const [isRead, setIsRead] = useState(false);
+  const toggleHaveSwitch = () => setIsHave(previousState => !previousState);
+  const toggleEbookSwitch = () => setIsEbook(previousState => !previousState);
+  const toggleReadSwitch = () => setIsRead(previousState => !previousState);
+
+  return(
+    <View style={{flex:1, padding:15, backgroundColor: '#ffffff'}}>
+      <Text style={{marginBottom:30, marginTop: 10, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>새 책 정보</Text>
+
+      <TextInput 
+        style={{backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+        placeholder={'책 제목'}
+        clearTextOnFocus={true}
+        onChangeText={text=>setTitle(text)}
+        />
+
+
+        <TextInput 
+          style={{marginTop: 25, backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+          placeholder={'작가'}
+          clearTextOnFocus={true}
+          onChangeText={text=>setAuthor(text)} 
+        />
+        
+        <TextInput 
+          style={{marginTop: 25, backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+          placeholder={'출판사'}
+          clearTextOnFocus={true}
+          onChangeText={text=>setPublisher(text)}  
+        />
+
+          <Text style={{marginBottom:10, marginTop: 20, marginLeft:8, fontSize: 17, fontWeight: '500'}}>책 소유 상태</Text>
+          <Switch
+            ios_backgroundColor="#d5d5d5"
+            onValueChange={toggleHaveSwitch}
+            value={isHave}
+            style={{marginLeft:5}}
+          />
+
+          
+          <Text style={{marginBottom:10, marginTop: 20, marginLeft:8, fontSize: 18, fontWeight: '500'}}>e-book</Text>
+          <Switch
+            ios_backgroundColor="#d5d5d5"
+            onValueChange={toggleEbookSwitch}
+            value={isEbook}
+            style={{marginLeft:5}}
+          />
+
+          <Text style={{marginBottom:10, marginTop: 20, marginLeft:8, fontSize: 17, fontWeight: '500'}}>완독여부</Text>
+          <Switch
+            ios_backgroundColor="#d5d5d5"
+            onValueChange={toggleReadSwitch}
+            value={isRead}
+            style={{marginLeft:5}}
+          />
+        <TouchableOpacity 
+          style={{marginTop: 50,backgroundColor:'#Ff7171', paddingTop:20, height: 60, borderRadius: 8,  shadowColor: "#000000", shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }}}
+          onPress={()=>{database.setBookInfo(title, author, publisher, isHave, isEbook, isRead)}}
+        >
+          <Text style={{textAlign:'center', color:'#ffffff', fontWeight:'bold'}}>입력완료</Text>
+        </TouchableOpacity>
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
   flatlist: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+    marginLeft:22
 },
   headerContainer: {
     height:'20%',
