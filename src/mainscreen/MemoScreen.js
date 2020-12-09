@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, TextInput, Switch } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, TextInput, Switch,RefreshControl,Pressable,Button, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {database} from '../database';
 import * as SQLite from 'expo-sqlite';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const db = SQLite.openDatabase('imbook.db');
 
@@ -24,7 +25,11 @@ function MemoScreen() {
         component={AddMemo}
         options={{title:'독후감 쓰기'}}
       />
-
+      <MemoStack.Screen
+        name="UpdateMemo"
+        component={UpdateMemo}
+        options={{title:'독후감 수정'}}
+      />
 
 
     </MemoStack.Navigator>
@@ -33,8 +38,10 @@ function MemoScreen() {
 
 
 function MemoMain({navigation}) {
+  const [DATA, setDATA] = useState([]);
+  const [isrefreshing, setIsRefreshing] = useState(false);
 
-  const[DATA, setDATA] = useState([]);
+
   async function loadData() {
     let promise = new Promise(function(resolve, reject){
 
@@ -61,6 +68,7 @@ function MemoMain({navigation}) {
               BookReport.reverse();
               setDATA(BookReport)
               resolve();
+              
             },
             (_t, error)=>{console.log('select book report fail'); console.log(error)},
           );
@@ -69,13 +77,16 @@ function MemoMain({navigation}) {
 
       
   })
+  setIsRefreshing(true);
   await promise;
+  console.log('report data', DATA);
+  setIsRefreshing(false);
   
 }
 
   useEffect(()=> {
     loadData()
-  });
+  },[]);
 
 
   return (
@@ -87,8 +98,26 @@ function MemoMain({navigation}) {
 
       
       <FlatList
+        onRefresh={loadData}
+        refreshing={isrefreshing}
         data={DATA}
-        renderItem={({item, index})=>(<MemoItem booktitle={item.title} title={item.report_title} content={item.report}/>)}
+        keyExtractor={(item, index)=> index.toString()}
+        renderItem={({item, index, separators})=>(
+          <TouchableOpacity
+            onLongPress={()=>{navigation.navigate("UpdateMemo",
+            {
+              id: item.book_id,
+              title: item.report_title,
+              content: item.report,
+              report_id: item.report_id
+            }
+              
+            )}}
+            delayLongPress={700}
+          >
+            <MemoItem booktitle={item.title} title={item.report_title} content={item.report} index={index}/>
+          </TouchableOpacity>
+          )}
       />
       
     </View>
@@ -118,7 +147,6 @@ function AddMemo({route, navigation}) {
       <TextInput 
         style={{backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
         placeholder={'책 id'}
-
         onChangeText={text=>setBookId(parseInt(text))}
       />
 
@@ -131,8 +159,8 @@ function AddMemo({route, navigation}) {
 
       <Text style={{marginTop: 30, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>내용</Text>
         <TextInput 
-          style={{marginTop: 20, backgroundColor:'#ffffff', height: 300, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
-
+          style={{flexShrink :1, marginTop: 20, backgroundColor:'#ffffff', height: 300, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+          multiline ={true}
           onChangeText={text=>setReport(text)} 
         />
         
@@ -141,7 +169,56 @@ function AddMemo({route, navigation}) {
 
         <TouchableOpacity 
           style={{marginTop: 13,backgroundColor:'#Ff7171', paddingTop:20, height: 60, borderRadius: 8,  shadowColor: "#000000", shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }}}
-          onPress={()=>{database.setBookReport(bookId, reportTitle, report)}}
+          onPress={()=>{database.setBookReport(bookId, reportTitle, report);navigation.navigate("MemoMain")}}
+        >
+          <Text style={{textAlign:'center', color:'#ffffff', fontWeight:'bold'}}>입력완료</Text>
+        </TouchableOpacity>
+    </View>
+  )
+}
+
+function UpdateMemo({route, navigation}) {
+  const {id, title, content, report_id} = route.params;
+
+  const [bookId, setBookId] = useState(id);
+  const [reportTitle, setReportTitle] = useState(title);
+  const [report, setReport] = useState(content);
+  
+  return(
+    <View style={{flex:1, padding:15, backgroundColor: '#ffffff'}}>
+      <View style={{flexDirection:'row'}}>
+        <Text style={{flex:7, marginBottom:20, marginTop: 5, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>독후감 수정</Text>
+        <Button style={{flex: 1, }} title="삭제" color='tomato' onPress={()=>{
+}}/>
+      </View>
+      <TextInput 
+        style={{backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+        placeholder={'책 id'}
+        defaultValue={String(bookId)}
+        onChangeText={text=>setBookId(parseInt(text))}
+      />
+
+      <TextInput 
+        style={{marginTop:20,backgroundColor:'#ffffff', height: 50, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+        placeholder={'독후감 제목'}
+        defaultValue={reportTitle}
+        onChangeText={text=>setReportTitle(text)}
+        />
+
+      <Text style={{marginTop: 30, marginLeft:8, fontSize: 20, fontWeight: 'bold'}}>내용</Text>
+        <TextInput 
+          style={{flexShrink :1, marginTop: 20, backgroundColor:'#ffffff', height: 300, paddingLeft:10, shadowColor: "#000000", shadowOpacity: 0.25, shadowOffset: { width: 2, height: 2 }, borderRadius:8, fontSize: 14}}
+          multiline ={true}
+          defaultValue={report}
+          onChangeText={text=>setReport(text)} 
+        />
+        
+
+
+
+        <TouchableOpacity 
+          style={{marginTop: 13,backgroundColor:'#Ff7171', paddingTop:20, height: 60, borderRadius: 8,  shadowColor: "#000000", shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }}}
+          onPress={()=>{database.updateBookReport(bookId, reportTitle, report, report_id);Alert.alert('알림','독후감이 수정되었습니다');navigation.navigate("MemoMain")}}
         >
           <Text style={{textAlign:'center', color:'#ffffff', fontWeight:'bold'}}>입력완료</Text>
         </TouchableOpacity>

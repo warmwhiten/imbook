@@ -35,9 +35,7 @@ export default function App() {
             iconName = 'md-bookmarks'
           } else if (route.name==='List') {
             iconName = 'ios-list'
-          } else if (route.name==='Statics') {
-            iconName = 'ios-stats'
-          }
+          } 
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -47,11 +45,12 @@ export default function App() {
         inactiveTintColor: 'gray',
       }}
       >
-        <Tab.Screen name="List"  component={ListScreen}/>
         <Tab.Screen name="Home" component={HomeScreen}/>
+        <Tab.Screen name="List"  component={ListScreen}/>
+
         <Tab.Screen name="Memo" component={MemoScreen}/>
 
-        <Tab.Screen name="Statics"  component={StaticsScreen}/>        
+      
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -77,7 +77,7 @@ function setBookInfo(title, author, publisher, isHave, isEbook, isRead){
 
         tx.executeSql(`INSERT INTO bookInfo ("title", "author", "publisher") VALUES ('${title}', '${author}', '${publisher}');`,
         [],
-        (t, success)=>{console.log('insert success')},
+        (t, success)=>{console.log('insert success', success)},
         (_t, error)=> {console.log('insert fail', error)});
     })
 
@@ -93,7 +93,7 @@ function setBookInfo(title, author, publisher, isHave, isEbook, isRead){
 
     db.transaction(tx=>{
 
-        tx.executeSql(`INSERT INTO bookstate ("id","have", "reading", "havingform") VALUES (${id},${isHave}, ${isRead},${isEbook});`,
+        tx.executeSql(`INSERT INTO bookstate ("book_id","have", "reading", "havingform") VALUES (${id},${isHave}, ${isRead},${isEbook});`,
         [],
         (t, success)=>{console.log('insertbookstate success')},
         (_t, error)=>{console.log('insert bookstate fail'); console.log(error)})
@@ -119,52 +119,86 @@ function setBookInfo(title, author, publisher, isHave, isEbook, isRead){
         (_t, error)=>{console.log('select book state fail'); console.log(error)}
         );
       })
-    
-/*
-        db.transaction(tx => {
+
+      db.transaction(tx => {
         tx.executeSql('SELECT * FROM bookinfo', 
             [], 
             (tx, results) => {
                 console.log('select success')
                 
             const rows = results.rows;
-            let BookInfo = [];
+            let Bookstate = [];
   
              for (let i = 0; i < rows.length; i++) {
-                BookInfo.push({
+                Bookstate.push({
                 ...rows.item(i),
                 });
             }
   
-            console.log('newbookinfo',BookInfo)
+            console.log('newbookinfo',Bookstate)
         },
-        (t, error)=>{console.log('select book info fail'); console.log(error)}
+        (_t, error)=>{console.log('select book state fail'); console.log(error)}
+        );
+      })
+}
+
+function updateBookInfo(id, title, author, publisher, isHave, isEbook, isRead){
+    console.log('update bookinfo')
+    console.log( 'have ebook read',isHave, isEbook, isRead)
+    db.transaction(tx=>{
+
+        tx.executeSql(`UPDATE bookInfo SET title='${title}', author='${author}', publisher='${publisher}' WHERE id=${id};`,
+        [],
+        (t, success)=>{console.log(' book info success')},
+        (_t, error)=> {console.log('insert fail', error)});
+    })
+    db.transaction(tx=>{
+
+        tx.executeSql(`UPDATE bookstate SET have='${isHave}', reading='${isRead}', havingform='${isEbook}' WHERE book_id=${id};`,
+        [],
+        (t, success)=>{console.log('book state update success', success)},
+        (_t, error)=> {console.log('book state insert fail', error)});
+        
+    })
+    db.transaction(tx => {
+        tx.executeSql('SELECT * FROM bookstate', 
+            [], 
+            (tx, results) => {
+                console.log('select success')
+                
+            const rows = results.rows;
+            let Bookstate = [];
+  
+             for (let i = 0; i < rows.length; i++) {
+                Bookstate.push({
+                ...rows.item(i),
+                });
+            }
+  
+            console.log('bookstate',Bookstate)
+        },
+        (_t, error)=>{console.log('select book state fail'); console.log(error)}
         );
       })
 
-    await db.transaction(tx => {
-        tx.executeSql('SELECT * FROM bookinfo', 
-            [], 
-            (tx, results) => {
-                console.log('select success')
-                console.log(results.rows.item())
-                
-            const rows = results.rows;
-            let BookInfo = [];
-  
-             for (let i = 0; i < rows.length; i++) {
-                BookInfo.push({
-                ...rows.item(i),
-                });
-            }
-  
-            bookInfo=BookInfo
-            console.log(bookInfo)
-        },
-        (t, error)=>{console.log('select book info fail'); console.log(error)}
-        );
-      })
-*/
+}
+
+function deleteBookInfo(id){
+    console.log('delete bookinfo')
+    db.transaction(tx=>{
+
+        tx.executeSql(`DELETE FROM bookinfo WHERE id=${id}`,
+        [],
+        (t, success)=>{console.log('delete success')},
+        (_t, error)=> {console.log('delete fail', error)});
+    })
+    db.transaction(tx=>{
+
+        tx.executeSql(`DELETE FROM bookstate WHERE book_id=${id}`,
+        [],
+        (t, success)=>{console.log('delete success')},
+        (_t, error)=> {console.log('delete fail', error)});
+    })
 }
 
 function setBookReport(book_id, reportTitle, report){
@@ -199,52 +233,74 @@ function setBookReport(book_id, reportTitle, report){
         (_t, error)=>{console.log('select book report fail'); console.log(error)}
         );
       })
-    
-/*
-        db.transaction(tx => {
-        tx.executeSql('SELECT * FROM bookinfo', 
-            [], 
-            (tx, results) => {
-                console.log('select success')
-                
-            const rows = results.rows;
-            let BookInfo = [];
-  
-             for (let i = 0; i < rows.length; i++) {
-                BookInfo.push({
-                ...rows.item(i),
-                });
-            }
-  
-            console.log('newbookinfo',BookInfo)
-        },
-        (t, error)=>{console.log('select book info fail'); console.log(error)}
-        );
-      })
+}
 
-    await db.transaction(tx => {
-        tx.executeSql('SELECT * FROM bookinfo', 
+function updateBookReport(book_id, reportTitle, report, report_id){
+    console.log('set bookinfo')
+    db.transaction(tx=>{
+
+        tx.executeSql(`UPDATE bookreport SET book_id='${book_id}', report_title='${reportTitle}', report='${report}' WHERE report_id=${report_id};`,
+        [],
+        (t, success)=>{console.log('insert success')},
+        (_t, error)=> {console.log('insert fail', error)});
+    })
+
+
+    db.transaction(tx => {
+        tx.executeSql(`SELECT * FROM bookreport INNER JOIN bookinfo ON (bookreport.book_id = bookinfo.id) WHERE report_id=${report_id}`, 
             [], 
             (tx, results) => {
                 console.log('select success')
-                console.log(results.rows.item())
                 
             const rows = results.rows;
-            let BookInfo = [];
+            let Bookreport = [];
   
              for (let i = 0; i < rows.length; i++) {
-                BookInfo.push({
+                Bookreport.push({
                 ...rows.item(i),
                 });
             }
+            Bookreport.reverse();
   
-            bookInfo=BookInfo
-            console.log(bookInfo)
+            console.log('newbookreport',Bookreport)
         },
-        (t, error)=>{console.log('select book info fail'); console.log(error)}
+        (_t, error)=>{console.log('select book report fail'); console.log(error)}
         );
       })
-*/
+}
+
+function deleteBookReport(report_id){
+    console.log('delete bookinfo')
+    db.transaction(tx=>{
+
+        tx.executeSql(`DELETE FROM bookreport WHERE report_id=${report_id}`,
+        [],
+        (t, success)=>{console.log('delete success')},
+        (_t, error)=> {console.log('delete fail', error)});
+    })
+
+
+    db.transaction(tx => {
+        tx.executeSql(`SELECT * FROM bookreport INNER JOIN bookinfo ON (bookreport.book_id = bookinfo.id) WHERE report_id=${report_id}`, 
+            [], 
+            (tx, results) => {
+                console.log('select success')
+                
+            const rows = results.rows;
+            let Bookreport = [];
+  
+             for (let i = 0; i < rows.length; i++) {
+                Bookreport.push({
+                ...rows.item(i),
+                });
+            }
+            Bookreport.reverse();
+  
+            console.log('newbookreport',Bookreport)
+        },
+        (_t, error)=>{console.log('select book report fail'); console.log(error)}
+        );
+      })
 }
 
 
@@ -253,5 +309,10 @@ function setBookReport(book_id, reportTitle, report){
 export const database = {
     getBookInfo,
     setBookInfo,
+    updateBookInfo,
+    deleteBookInfo,
     setBookReport,
+    updateBookReport,
+    deleteBookReport,
+    
 }
