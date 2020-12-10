@@ -46,9 +46,8 @@ export default function App() {
       }}
       >
         <Tab.Screen name="Home" component={HomeScreen}/>
-        <Tab.Screen name="List"  component={ListScreen}/>
-
         <Tab.Screen name="Memo" component={MemoScreen}/>
+        <Tab.Screen name="List"  component={ListScreen}/>
 
       
       </Tab.Navigator>
