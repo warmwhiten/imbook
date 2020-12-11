@@ -1,5 +1,5 @@
 # imbook
-내 책을 관리하고, 책의 독후감을 관리하는 어플리케이션 imbook 입니다.
+내 책을 관리하고, 책의 독후감을 관리하는 어플리케이션 imbook 입니다. React Native, Expo, SQLite가 사용되었습니다.
 
 ## Preview
 
