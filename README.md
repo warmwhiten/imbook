@@ -2,10 +2,10 @@
 내 책을 관리하고, 책의 독후감을 관리하는 어플리케이션 imbook 입니다.
 
 ## Preview
-![ezgif com-gif-maker (5)](https://user-images.githubusercontent.com/40848918/101899480-3ce91f00-3bf1-11eb-9e15-71cf80116079.gif)
-![ezgif com-gif-maker (4)](https://user-images.githubusercontent.com/40848918/101899485-3f4b7900-3bf1-11eb-803e-222fab81e79a.gif)
-![ezgif com-gif-maker (7)](https://user-images.githubusercontent.com/40848918/101899487-3fe40f80-3bf1-11eb-94f6-0583cdd2bb07.gif)
-![ezgif com-gif-maker (6)](https://user-images.githubusercontent.com/40848918/101899490-407ca600-3bf1-11eb-9c4e-306dd749634f.gif)
+
+|------|---|---|---|
+|![ezgif com-gif-maker (10)](https://user-images.githubusercontent.com/40848918/101899912-e92b0580-3bf1-11eb-95c3-bcd2b4ae1888.gif)|![ezgif com-gif-maker (11)](https://user-images.githubusercontent.com/40848918/101899910-e8926f00-3bf1-11eb-9a02-1965a41d6053.gif)|![ezgif com-gif-maker (8)](https://user-images.githubusercontent.com/40848918/101899909-e7f9d880-3bf1-11eb-940a-339dc9a37e45.gif)|![ezgif com-gif-maker (9)](https://user-images.githubusercontent.com/40848918/101899906-e6301500-3bf1-11eb-84b5-e58a9d96788c.gif)|
+
 
 
 ## Description
