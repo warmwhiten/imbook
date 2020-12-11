@@ -3,8 +3,11 @@
 
 ## Preview
 
-|------|---|---|---|
-|![ezgif com-gif-maker (10)](https://user-images.githubusercontent.com/40848918/101899912-e92b0580-3bf1-11eb-95c3-bcd2b4ae1888.gif)|![ezgif com-gif-maker (11)](https://user-images.githubusercontent.com/40848918/101899910-e8926f00-3bf1-11eb-9a02-1965a41d6053.gif)|![ezgif com-gif-maker (8)](https://user-images.githubusercontent.com/40848918/101899909-e7f9d880-3bf1-11eb-940a-339dc9a37e45.gif)|![ezgif com-gif-maker (9)](https://user-images.githubusercontent.com/40848918/101899906-e6301500-3bf1-11eb-84b5-e58a9d96788c.gif)|
+
+![ezgif com-gif-maker (10)](https://user-images.githubusercontent.com/40848918/101899912-e92b0580-3bf1-11eb-95c3-bcd2b4ae1888.gif)
+![ezgif com-gif-maker (11)](https://user-images.githubusercontent.com/40848918/101899910-e8926f00-3bf1-11eb-9a02-1965a41d6053.gif)
+![ezgif com-gif-maker (8)](https://user-images.githubusercontent.com/40848918/101899909-e7f9d880-3bf1-11eb-940a-339dc9a37e45.gif)
+![ezgif com-gif-maker (9)](https://user-images.githubusercontent.com/40848918/101899906-e6301500-3bf1-11eb-84b5-e58a9d96788c.gif)
 
 
 
