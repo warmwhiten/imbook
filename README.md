@@ -21,15 +21,15 @@
 $ git clone https://github.com/warmwhiten/imbook.git
 $ cd imbook
 ```
-3. 프로그램 실행을 위해 Expo Cli설치가 필요합니다. [expo installation](https://docs.expo.io/get-started/installation/)
+2. 프로그램 실행을 위해 Expo Cli설치가 필요합니다. [expo installation](https://docs.expo.io/get-started/installation/)
 ```
 $ npm install --global expo-cli
 ```
-4. Expo cli가 설치되었으면 expo install 명령을 통해 의존성 모듈을 설치해주세요. 
+3. Expo cli가 설치되었으면 expo install 명령을 통해 의존성 모듈을 설치해주세요. 
 ```
 $ expo install
 ```
-5. expo start 명령을 통해 프로그램을 실행시킬 수 있습니다. 출력되는 qr코드를 모바일 디바이스에 인식하면 앱이 실행됩니다. 이 과정에는 모바일 디바이스에 expo 앱 설치가 필요합니다. 
+4. expo start 명령을 통해 프로그램을 실행시킬 수 있습니다. 출력되는 qr코드를 모바일 디바이스에 인식하면 앱이 실행됩니다. 이 과정에는 모바일 디바이스에 expo 앱 설치가 필요합니다. 
 ```
 $ expo start
 ```
