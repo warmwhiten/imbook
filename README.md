@@ -1,4 +1,6 @@
 # imbook
+![issuebadge](https://img.shields.io/github/issues/warmwhiten/imbook)
+![Licesebadge](https://img.shields.io/badge/<license>-<MIT>-<green>)
 내 책을 관리하고, 책의 독후감을 관리하는 React Native 어플리케이션 imbook 입니다. 별도의 서버 없이 SQLite를 이용하여 사용자 데이터를 기기 안에 저장하고 관리합니다.
 
 ## Description
