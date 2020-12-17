@@ -1,5 +1,5 @@
 # imbook
-![issuebadge](https://img.shields.io/github/issues/warmwhiten/imbook)
+
 ![Licesebadge](https://img.shields.io/badge/license-MIT-<green>)
   
     
