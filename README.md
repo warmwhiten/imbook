@@ -1,5 +1,5 @@
 # imbook
-![issuebadge](https://img.shields.io/github/issues/warmwhiten/imbook)
+
 ![Licesebadge](https://img.shields.io/badge/license-MIT-<green>)
   
     
@@ -48,27 +48,27 @@ $ expo start
 
 ## Dependencies
 ```
-    "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.11.2",
     "@react-navigation/drawer": "^5.11.4",
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.12.8",
-    "expo": "~39.0.2",
-    "expo-asset": "~8.2.0",
-    "expo-file-system": "~9.2.0",
-    "expo-image-manipulator": "~8.3.0",
-    "expo-splash-screen": "~0.6.2",
-    "expo-sqlite": "~8.4.0",
-    "expo-status-bar": "~1.0.2",
-    "expo-updates": "~0.3.2",
+    "expo": "^40.0.0",
+    "expo-asset": "~8.2.1",
+    "expo-file-system": "~9.3.0",
+    "expo-image-manipulator": "~8.4.0",
+    "expo-splash-screen": "~0.8.1",
+    "expo-sqlite": "~8.5.0",
+    "expo-status-bar": "~1.0.3",
+    "expo-updates": "~0.4.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "~0.63.3",
-    "react-native-gesture-handler": "~1.7.0",
+    "react-native": "0.63.4",
+    "react-native-gesture-handler": "~1.8.0",
     "react-native-reanimated": "~1.13.0",
-    "react-native-safe-area-context": "3.1.4",
-    "react-native-screens": "~2.10.1",
-    "react-native-unimodules": "~0.11.0",
+    "react-native-safe-area-context": "3.1.9",
+    "react-native-screens": "~2.15.0",
+    "react-native-unimodules": "~0.12.0",
     "react-native-web": "~0.13.12"
 ```
 
