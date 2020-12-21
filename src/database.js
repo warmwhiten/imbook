@@ -183,6 +183,37 @@ function updateBookInfo(id, title, author, publisher, isHave, isEbook, isRead){
 
 }
 
+function getBookInfo(){
+    db.transaction(tx=>{
+        tx.executeSql('CREATE TABLE IF NOT EXISTS bookreport ("report_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "book_id" INTEGER NOT NULL, "report_title" TEXT NOT NULL , "report" TEXT NOT NULL, FOREIGN KEY("book_id") REFERENCES "bookinfo"("id") ON DELETE CASCADE);',
+          [],
+          (t, success)=>{},
+          (_t, error) => {console.log('create bookreport tabel fail'); console.log(error)}
+          );
+      })
+
+      db.transaction(tx => {
+          tx.executeSql('SELECT * FROM bookreport INNER JOIN bookinfo ON (bookreport.book_id = bookinfo.id)', 
+              [], 
+              (t, results) => {                   
+              const rows = results.rows;
+              let BookReport = [];
+        
+              for (let i = 0; i < rows.length; i++) {
+                  BookReport.push({
+                  ...rows.item(i),
+                  });
+              }
+              BookReport.reverse();
+              setDATA(BookReport)
+              resolve();
+              
+            },
+            (_t, error)=>{console.log('select book report fail'); console.log(error)},
+          );
+          })
+}
+
 function deleteBookInfo(id){
     console.log('delete bookinfo')
     db.transaction(tx=>{
@@ -311,6 +342,7 @@ export const database = {
     setBookInfo,
     updateBookInfo,
     deleteBookInfo,
+    getBookInfo,
     setBookReport,
     updateBookReport,
     deleteBookReport,
